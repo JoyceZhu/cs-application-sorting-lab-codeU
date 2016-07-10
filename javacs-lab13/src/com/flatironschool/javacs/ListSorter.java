@@ -5,6 +5,7 @@ package com.flatironschool.javacs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,8 +64,44 @@ public class ListSorter<T> {
 	 * @return
 	 */
 	public List<T> mergeSort(List<T> list, Comparator<T> comparator) {
-        // FILL THIS IN!
-        return null;
+        // Base case
+        if (list.size() < 2)
+        	return list;
+        // Split the list into halves recursively and sort them.
+        List<T> first = new LinkedList<>(list.subList(0, list.size()/2));
+        Collections.sort(first, comparator);
+        List<T> second = new LinkedList<>(list.subList(list.size()/2, list.size()));
+        Collections.sort(second, comparator);
+        // Merge the two sorted halves back together.
+        List<T> merged = new LinkedList<>();
+        int first_ptr = 0, second_ptr = 0;
+        while (first_ptr < first.size() && second_ptr < second.size())
+        {
+        	int result = comparator.compare(first.get(first_ptr), second.get(second_ptr));
+        	if (result < 0 )
+        	{
+        		merged.add(first.get(first_ptr));
+        		first_ptr++;
+        	}
+        	else
+        	{
+        		merged.add(second.get(second_ptr));
+        		second_ptr++;
+        	}
+        }
+        if (first_ptr < first.size())
+        	while (first_ptr < first.size())
+        	{
+        		merged.add(first.get(first_ptr));
+        		first_ptr++;
+        	}
+        if (second_ptr < second.size())
+        	while (second_ptr < second.size())
+        	{
+        		merged.add(second.get(second_ptr));
+        		second_ptr++;
+        	}
+        return merged;
 	}
 
 	/**
@@ -75,7 +112,14 @@ public class ListSorter<T> {
 	 * @return
 	 */
 	public void heapSort(List<T> list, Comparator<T> comparator) {
-        // FILL THIS IN!
+        PriorityQueue<T> temp = new PriorityQueue<>();
+        // Add all elements of the collection to a PriorityQueue using offer
+        for (T element: list)
+        	temp.offer(element);
+        // Remove the elements from the queue using poll and add them to a List
+        list.clear();
+        while (temp.size() > 0)
+        	list.add(temp.poll());
 	}
 
 	
@@ -89,8 +133,25 @@ public class ListSorter<T> {
 	 * @return
 	 */
 	public List<T> topK(int k, List<T> list, Comparator<T> comparator) {
-        // FILL THIS IN!
-        return null;
+        PriorityQueue<T> temp = new PriorityQueue<>();
+        for (T element: list)
+        {
+        	// 1: Add it if queue not full
+        	if (temp.size() < k)
+        		temp.offer(element);
+        	// If the queue is full, compare element to current smallest element;
+        	// if it's larger, kick that element out and add this element.
+        	else if (comparator.compare(element, temp.peek()) > 0)
+        	{
+        		temp.poll();
+        		temp.offer(element);
+        	}
+        }
+        // Make a new list because this isn't an in-place operation
+        List<T> top = new LinkedList<>();
+        while (temp.size() > 0)
+        	top.add(temp.poll());
+        return top;
 	}
 
 	
